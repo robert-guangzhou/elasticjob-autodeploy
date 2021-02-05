@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<property name="log.context.name" value="elasticjob-operator" />
+	<property name="log.charset" value="UTF-8" />
+	<property name="log.maxHistory" value="30" />
+	<!-- 定义日志文件 输入位置 -->
+	<property name="log.filePath" value="./logs" />
+	<property name="log.pattern"
+		value="%d{yyyy-MM-dd HH:mm:ss:SSS}[%thread]%-5level%logger{50}-%msg%n" />
+
+	<appender name="infoFileAppender"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!-- 文件路径 -->
+		<file>${log.filePath}/elasticjob-operator.log</file>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- 文件名称 -->
+			<fileNamePattern>${log.filePath}/info/info.%d{yyyy-MM-dd}.log.gz
+			</fileNamePattern>
+			<!-- 文件最大保存历史数量 -->
+			<maxHistory>${log.maxHistory}</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${log.pattern}</pattern>
+		</encoder>
+
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+	<contextName>${log.context.name}</contextName>
+	${log.pattern}
+	<appender name="STDOUT"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<encoder charset="${log.charset}">
+			<pattern>${log.pattern}</pattern>
+		</encoder>
+	</appender>
+
+	<root>
+		<level value="INFO" />
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="infoFileAppender" />
+
+	</root>
+	<logger name="org.apache" level="WARN">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="infoFileAppender" />
+	</logger>
+	<!-- <logger name="org.apache.zookeeper" level="WARN" /> -->
+	<!-- <logger name="org.apache.curator" level="WARN" /> -->
+	<!-- <logger name="elasticjob.operation" level="info"> -->
+	<!-- <appender-ref ref="infoFileAppender" /> -->
+	<!-- </logger> -->
+
+</configuration>
