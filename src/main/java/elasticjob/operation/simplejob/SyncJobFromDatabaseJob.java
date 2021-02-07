@@ -39,14 +39,7 @@ public class SyncJobFromDatabaseJob implements SimpleJob {
 	@Autowired
 	private SimpleCronJob simpleCronJob;
 
-//	public void getJobsFromZK() {
-//
-//		Collection<JobBriefInfo> jobs = simpleCronJob.getAllJobsBriefInfo();
-//		for (JobBriefInfo job : jobs) {
-//			JobSettings entity = simpleCronJob.getJobSetting(job.getJobName());
-//			jobSettingsMapper.insert(entity);
-//		}
-//	}
+	
 	@Override
 	public void execute(ShardingContext shardingContext) {
 

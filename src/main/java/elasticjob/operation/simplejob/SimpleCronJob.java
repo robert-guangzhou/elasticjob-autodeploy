@@ -61,6 +61,8 @@ import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperConfiguration;
 import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperRegistryCenter;
 import com.google.common.base.Optional;
 
+import elasticjob.operation.simplejob.mapper.JobSettingsMapper;
+
 import com.dangdang.ddframe.job.lite.lifecycle.api.JobSettingsAPI;
 import com.dangdang.ddframe.job.lite.lifecycle.domain.JobBriefInfo;
 import com.dangdang.ddframe.job.lite.lifecycle.domain.JobSettings;
@@ -566,6 +568,58 @@ public class SimpleCronJob {
 		return createSimpleJobScheduler(jobName, canonicalName, cron, shardingTotalCount, shardingItemParameters,
 				description, jobParameter, maxTimeDiffSeconds, defultOverwrite, jobGroup,
 				defaultReconcileIntervalMinutes, misfire, failover);
+
+	}
+
+	@Resource
+	JobSettingsMapper jobSettingsMapper;
+
+	public void syncJobsFromZK() {
+
+		Collection<JobBriefInfo> jobs = getAllJobsBriefInfo();
+		for (JobBriefInfo job : jobs) {
+			String jobName = job.getJobName();
+			JobSettings entity = getJobSetting(jobName);
+			try {
+
+				String status = getJobStatus(jobName);
+				entity.setStatus(status);
+				jobSettingsMapper.insert(entity);
+			} catch (Exception e) {
+				logger.info(entity.getJobName() + " insert failure,it maybe exist in db");
+			}
+		}
+	}
+
+	
+	/**
+	 * remove those jobs that lose configuration or status is removed
+	 */
+	public void cleanRemovedJob() {
+
+		List<String> jobNames = regCenter.getChildrenKeys("/");
+		CuratorFrameworkImpl frame = (CuratorFrameworkImpl) getRegCenter().getRawClient();
+
+		for (String jobName : jobNames) {
+
+			try {
+		        JobNodePath jobNodePath = new JobNodePath(jobName);
+		        //Config not exist also be delete
+				 String liteJobConfigJson = regCenter.get(jobNodePath.getConfigNodePath()); 
+				if (liteJobConfigJson == null || getJobStatus(jobName).equals(JobOperateAPIImpl.Removed)) {
+
+					String path = "/" + jobName;
+					try {
+						frame.delete().deletingChildrenIfNeeded().forPath(path);
+					} catch (Exception e) {
+						logger.error(e.getLocalizedMessage(), e);
+						// e.printStackTrace();
+					}
+				}
+			} catch (Exception e) {
+				logger.error(jobName + " clean fail", e);
+			}
+		}
 
 	}
 }

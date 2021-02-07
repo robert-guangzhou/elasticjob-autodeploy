@@ -168,6 +168,8 @@ public class JobChangeListener implements TreeCacheListener {
 		return regCenter.getChildrenKeys(new JobNodePath(jobName).getInstancesNodePath()).size();
 	}
 
+	
+	
 	public boolean getJobInstanceExist(final String jobName,String instanceId) {
 		String path = new JobNodePath(jobName).getInstanceNodePath(instanceId);
 		return regCenter.isExisted(path);
