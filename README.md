@@ -95,7 +95,7 @@ ComponentScan.basePackages=com.radishgz.elasticjobautodeploy.example,elasticjob.
 ```
 elasticjob.operation.simplejob 为默认的package，必须保留。
 
-##License
+## License
 部分代码基于elasticjob 2.1.5修改。
 本项目使用APACHE LICENSE, VERSION 2.0。
 
