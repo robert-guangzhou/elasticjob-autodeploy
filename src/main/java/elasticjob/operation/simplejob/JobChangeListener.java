@@ -215,6 +215,8 @@ public class JobChangeListener implements TreeCacheListener {
 					"groups=" + supportGroups + "-------jobgroup=" +jobgroup );
 			return supportGroups.contains(jobgroup);
 		} catch (ClassNotFoundException e) {
+			System.err.println("class:" + jobclass + " not exist, no job need to start");
+
 			logger.debug("class:" + jobclass + " not exist, no job need to start");
 			return false;
 		} 

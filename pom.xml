@@ -264,6 +264,14 @@
 						<exclude>**/application-dev.properties</exclude>
 						<exclude>**/env.properties</exclude>
 					</excludes>
+					<archive>
+
+						<manifestEntries>
+							<Loader-Path>file:./jars</Loader-Path>
+
+							<mainClass>${start-class}</mainClass>
+						</manifestEntries>
+					</archive>
 				</configuration>
 			</plugin>
 
@@ -272,9 +280,9 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<fork>true</fork>
-					<mainClass>${start-class}</mainClass>
-					<!-- <mainClass>elasticjob.operation.simplejob.JobChangeListenerMain</mainClass> -->
 
+					<mainClass>${start-class}</mainClass>
+					<layout>ZIP</layout>
 				</configuration>
 				<executions>
 					<execution>
@@ -284,7 +292,7 @@
 					</execution>
 				</executions>
 			</plugin>
-
+			<!-- <plugin> -->
 			<!-- <groupId>org.apache.maven.plugins</groupId> -->
 			<!-- <artifactId>maven-assembly-plugin</artifactId> -->
 			<!-- <version>2.5.5</version> -->

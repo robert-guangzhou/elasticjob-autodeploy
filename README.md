@@ -11,7 +11,7 @@ automatic  deploy elasticjob's job from definition in database , include  deploy
  - 优雅下线job进程
  
 
-目前版本居于elasticjob-lite 2.1.4 进行修改和扩展。
+代码基于elasticjob-lite 2.1.4/2.1.5 进行修改和扩展。
 
 为支持自动部署，为simple job扩展了一个属性：job group，job group值默认为default，对于不使用本软件部署的原始的elastic job会自动归属到default组。
 
@@ -29,10 +29,21 @@ public final static String Enabled="ENABLED";
 
 每一个运行job的实例进程称为worker，worker上只运行
 
- 1. job属于worker支持group，一个worker可以同时支持多个group，配置属性为autodeploy.elasticjob.supportGroups，默认只为default   
+1、job属于worker支持group，一个worker可以同时支持多个group，配置属性为autodeploy.elasticjob.supportGroups，默认只为default   
 2、autodeploy.elasticjob.syncFromDB=true时候，运行从数据库定时同步job到zookeeper，在同一组应用/namespace下建议autodeploy.elasticjob.syncFromDB=true的进程不超过3个。
 
 
+## 表jobs_settings 说明
+这个表使用mybatis plus 对应到com.dangdang.ddframe.job.lite.lifecycle.domain的JobSettings对象，
+JobSettings本项目新增加了如下job归属组及状态2个字段 :
+
+ private String jobGroup="default"; 
+    
+ private String status=JobOperateAPIImpl.Enabled;
+ 
+ 同时serialVersionUID不入数据库。
+ 
+    
 ## 自动部署逻辑
 
  1. 监听elastic job 在zk上的root path，即elasticjob的namespace 节点
@@ -95,6 +106,11 @@ ComponentScan.basePackages=com.radishgz.elasticjobautodeploy.example,elasticjob.
 ```
 elasticjob.operation.simplejob 为默认的package，必须保留。
 
+## 部署
+  需要执行2点
+ 1. 将相关jar放到./jars下或者使用-Dloader.path指定的目录下
+ 2. 如果使用了spring bean，需要将相关packae加入到application.properties中的ComponentScan.basePackages中
+ 
 ## License
 部分代码基于elasticjob 2.1.5修改。
 本项目使用APACHE LICENSE, VERSION 2.0。
