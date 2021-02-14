@@ -227,7 +227,7 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
         
         /**
          * set job's group name
-         * @param name
+         * @param name job name
          * @return
          */
         public Builder jobGroup(final String name) {
