@@ -1,5 +1,6 @@
-package elasticjob.operation.simplejob;
+package elasticjob.autodeploy.operation;
 
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.text.SimpleDateFormat;
@@ -67,7 +68,7 @@ public class JobCommandLineRunner implements ApplicationRunner {
 	private String listenerNamespac;
 
 	@Autowired
-	private SimpleCronJob simpleCronJob;
+	private LiteJobOperation simpleCronJob;
 
 	@Value("${autodeploy.elasticjob.syncFromDB:false}")
 	private boolean syncFromDB;
@@ -90,6 +91,9 @@ public class JobCommandLineRunner implements ApplicationRunner {
 	@Autowired
 	private SyncJobFromDatabaseJob syncJobFromDatabaseJob;
 
+	@Autowired
+	private LiteJobCreateFactory liteJobCreateFactory;
+	
 	public void mainCmd(ApplicationArguments args) throws Exception {
 
 		if (miscellaneousOperation(args)) return;
@@ -111,9 +115,13 @@ public class JobCommandLineRunner implements ApplicationRunner {
 //					1, "", "sync ElasticJob From Database","",syncJobGroup);
 			syncJobFromDatabaseJob.compareJobsFromZK(syncJobName);
 			// don't need misfail and failover
-			JobScheduler schuduler = simpleCronJob.createJob(syncJobName, syncCron,
-					SyncJobFromDatabaseJob.class.getCanonicalName(), 1, "", "sync ElasticJob From Database", "",
-					syncJobGroup, false, false);
+			
+			//
+			
+		
+				
+			JobScheduler schuduler = liteJobCreateFactory.createSimpleJob(syncJobGroup,syncJobName, syncCron,
+					SyncJobFromDatabaseJob.class.getCanonicalName(), 1, "", "sync ElasticJob From Database", "", false, false);
 			schuduler.start();
 			// simpleCronJob.startSimpleJob(syncJobName);
 		}
@@ -122,7 +130,7 @@ public class JobCommandLineRunner implements ApplicationRunner {
 			supportGroups = supportGroups.trim() + ",";
 
 		if (isWorker) {
-			JobChangeListener jobLister = JobChangeListener.addJobChangeListener(simpleCronJob.getRegCenter(),
+			JobChangeListener jobLister = JobChangeListener.addJobChangeListener(liteJobCreateFactory,simpleCronJob.getRegCenter(),
 					namespaceRegCenter, simpleCronJob, supportGroups);
 			jobLister.startAllJob();
 			// System.out.printf("锟斤拷始时锟戒：%s\n\n", new

@@ -1,4 +1,4 @@
-package elasticjob.operation;
+package elasticjob.autodeploy.operation;
 
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
@@ -15,12 +15,12 @@ import org.apache.curator.retry.RetryNTimes;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import elasticjob.operation.simplejob.SimpleCronJob;
+import elasticjob.autodeploy.operation.LiteJobOperation;
 
 public class ZKTest {
 
 	@Autowired
-	SimpleCronJob simpleCronJob;
+	LiteJobOperation simpleCronJob;
 
 	
 	@Test 
@@ -56,35 +56,35 @@ public class ZKTest {
 		CuratorFramework client = CuratorFrameworkFactory.newClient("192.168.157.140:2181", new RetryNTimes(
                 10, 5000));
                 
-        client.start();//Æô¶¯¿Í»§¶Ë±ðÍü¼ÇÁË
+        client.start();//ï¿½ï¿½ï¿½ï¿½ï¿½Í»ï¿½ï¿½Ë±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         
         InterProcessMutex lock = new InterProcessMutex(client, "/mylock");
         CountDownLatch countDownLatch = new CountDownLatch(2);
         new Thread(()->{
             try {
                 if (lock.acquire(5, TimeUnit.SECONDS)){
-                    System.out.println(Thread.currentThread().getName()+" »ñµÃÁËËø");
+                    System.out.println(Thread.currentThread().getName()+" ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
                     lock.release();
                 }else
-                    System.out.println(Thread.currentThread().getName()+" Ã»ÄÃµ½Ëø");
+                    System.out.println(Thread.currentThread().getName()+" Ã»ï¿½Ãµï¿½ï¿½ï¿½");
             } catch (Exception e) {
                 e.printStackTrace();
             }
             countDownLatch.countDown();
-        },"Ò»ºÅÏß³Ì").start();
+        },"Ò»ï¿½ï¿½ï¿½ß³ï¿½").start();
 
         new Thread(()->{
             try {
                 if (lock.acquire(5, TimeUnit.SECONDS)){
-                    System.out.println(Thread.currentThread().getName()+" »ñµÃÁËËø");
+                    System.out.println(Thread.currentThread().getName()+" ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
                     lock.release();
                 }else
-                    System.out.println(Thread.currentThread().getName()+" Ã»ÄÃµ½Ëø");
+                    System.out.println(Thread.currentThread().getName()+" Ã»ï¿½Ãµï¿½ï¿½ï¿½");
             } catch (Exception e) {
                 e.printStackTrace();
             }
             countDownLatch.countDown();
-        },"¶þºÅÏß³Ì").start();
+        },"ï¿½ï¿½ï¿½ï¿½ï¿½ß³ï¿½").start();
 
         try {
 			countDownLatch.await();

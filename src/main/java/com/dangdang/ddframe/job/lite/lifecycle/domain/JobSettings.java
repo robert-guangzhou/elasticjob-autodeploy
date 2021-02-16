@@ -18,6 +18,7 @@
 package com.dangdang.ddframe.job.lite.lifecycle.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.dangdang.ddframe.job.executor.handler.JobProperties.JobPropertiesEnum;
 import com.dangdang.ddframe.job.lite.lifecycle.internal.operate.JobOperateAPIImpl;
 
@@ -28,6 +29,8 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 /**
  * 作业设置对象.
  * 
@@ -35,13 +38,16 @@ import java.util.Map;
  */
 @Getter
 @Setter
+@JsonIgnoreProperties
 public final class JobSettings implements Serializable {
 	
 	
 	@TableField(exist = false)
     private static final long serialVersionUID = -6532210090618686688L;
     
-    private String jobName;
+	
+	@TableId
+	private String jobName;
     
     private String jobType;
     

@@ -1,4 +1,4 @@
-package elasticjob.operation.simplejob;
+package elasticjob.autodeploy.operation;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ import com.dangdang.ddframe.job.lite.lifecycle.domain.JobBriefInfo;
 import com.dangdang.ddframe.job.lite.lifecycle.domain.JobSettings;
 import com.dangdang.ddframe.job.lite.lifecycle.internal.operate.JobOperateAPIImpl;
 
-import elasticjob.operation.simplejob.mapper.JobSettingsMapper;
+import elasticjob.autodeploy.operation.mapper.JobSettingsMapper;
 
 @Component
 public class SyncJobFromDatabaseJob implements SimpleJob {
@@ -37,8 +37,10 @@ public class SyncJobFromDatabaseJob implements SimpleJob {
 	JobSettingsMapper jobSettingsMapper;
 
 	@Autowired
-	private SimpleCronJob simpleCronJob;
+	private LiteJobOperation liteJobOperation;
 
+	@Autowired
+	private LiteJobCreateFactory liteJobCreateFactory;
 	
 	@Override
 	public void execute(ShardingContext shardingContext) {
@@ -104,7 +106,7 @@ public class SyncJobFromDatabaseJob implements SimpleJob {
 			dbJobNameList.add(jobName);
 			JobSettings zkEntity = null;
 			try {
-				zkEntity = simpleCronJob.getJobSetting(jobName);
+				zkEntity = liteJobOperation.getJobSetting(jobName);
 			} catch (NullPointerException e) {
 				zkEntity = null;
 				// nothing need to do
@@ -113,8 +115,9 @@ public class SyncJobFromDatabaseJob implements SimpleJob {
 			if (zkEntity == null && dbSetting.getStatus().equals(JobOperateAPIImpl.Enabled)) {
 				logger.info("find new job:" + jobName);
 				try {
-					simpleCronJob.createJob(dbSetting);
-				} catch (IOException e) {
+					//don't need 
+					liteJobCreateFactory.createJobScheduler(dbSetting,true);
+				} catch (Exception e) {
 					logger.info("create new job fail,jobname is" + jobName, e);
 				}
 
@@ -127,20 +130,21 @@ public class SyncJobFromDatabaseJob implements SimpleJob {
 				continue;
 
 			} else if (dbSetting.getStatus().equals(JobOperateAPIImpl.Disabled)) {
-				if (!simpleCronJob.getJobStatus(jobName).equals(JobOperateAPIImpl.Disabled)
-						&& !simpleCronJob.getJobStatus(jobName).equals(JobOperateAPIImpl.Shutdown)
-						&& !simpleCronJob.getJobStatus(jobName).equals(JobOperateAPIImpl.Removed)) {
+				if (!liteJobOperation.getJobStatus(jobName).equals(JobOperateAPIImpl.Disabled)
+						&& !liteJobOperation.getJobStatus(jobName).equals(JobOperateAPIImpl.Shutdown)
+						&& !liteJobOperation.getJobStatus(jobName).equals(JobOperateAPIImpl.Removed)) {
 
-					simpleCronJob.disableJob(jobName);
+					liteJobOperation.disableJob(jobName);
 				}
 				continue;
 			} else if (shouldRemoveAndRestart(dbSetting, zkEntity)) {
 				logger.info("remove and reset job:" + jobName);
 
 				try {
-					simpleCronJob.removeJob(jobName);
+					liteJobOperation.removeJob(jobName);
 					Thread.sleep(1000 * 10);
-					simpleCronJob.createJob(dbSetting);
+					//don't update data in database
+					liteJobCreateFactory.createJobScheduler(dbSetting,true);
 
 				} catch (Exception e) {
 					logger.info("remove and reset job fail,jobname is" + jobName, e);
@@ -150,7 +154,7 @@ public class SyncJobFromDatabaseJob implements SimpleJob {
 				logger.info("update job:" + jobName);
 
 				try {
-					simpleCronJob.setJobSetting(updateSetting(dbSetting, zkEntity));
+					liteJobOperation.setJobSetting(updateSetting(dbSetting, zkEntity));
 
 				} catch (Exception e) {
 					logger.info("update job fail,jobname is" + jobName, e);
@@ -158,12 +162,12 @@ public class SyncJobFromDatabaseJob implements SimpleJob {
 
 			}
 
-			if (!simpleCronJob.getJobStatus(jobName).equals(JobOperateAPIImpl.Enabled)) {
-				simpleCronJob.enableJob(jobName);
+			if (!liteJobOperation.getJobStatus(jobName).equals(JobOperateAPIImpl.Enabled)) {
+				liteJobOperation.enableJob(jobName);
 			}
 		}
 
-		Collection<JobBriefInfo> jobs = simpleCronJob.getAllJobsBriefInfo();
+		Collection<JobBriefInfo> jobs = liteJobOperation.getAllJobsBriefInfo();
 		for (JobBriefInfo job : jobs) {
 			String jobName = job.getJobName();
 			if (selfName.equals(jobName)) {// don't remove self
@@ -181,10 +185,10 @@ public class SyncJobFromDatabaseJob implements SimpleJob {
 
 	private void shutdownJob(String jobName) {
 		try {
-			String status = simpleCronJob.getJobStatus(jobName);
+			String status = liteJobOperation.getJobStatus(jobName);
 			if (!status.equals(JobOperateAPIImpl.Shutdown)) {
 				logger.info("shutdown  job:" + jobName);
-				simpleCronJob.shutdownJob(jobName);
+				liteJobOperation.shutdownJob(jobName);
 			}
 		} catch (Exception e) {
 			logger.info("shutdown   job fail,jobname is" + jobName, e);
@@ -194,10 +198,10 @@ public class SyncJobFromDatabaseJob implements SimpleJob {
 
 	private void removeJob(String jobName) {
 		try {
-			String status = simpleCronJob.getJobStatus(jobName);
+			String status = liteJobOperation.getJobStatus(jobName);
 			if (!status.equals(JobOperateAPIImpl.Removed)) {
 				logger.info("remove job:" + jobName);
-				simpleCronJob.removeJob(jobName);
+				liteJobOperation.removeJob(jobName);
 			}
 		} catch (Exception e) {
 			logger.info("remove   job fail,jobname is" + jobName, e);

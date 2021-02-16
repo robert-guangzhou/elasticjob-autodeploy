@@ -1,4 +1,4 @@
-package elasticjob.operation.simplejob.mapper;
+package elasticjob.autodeploy.operation.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 

@@ -2,13 +2,14 @@
 automatic  deploy elasticjob's job from definition in database , include  deploy job implemented by spring bean, current only support simpleJob
 
 
-根据数据库的定义，自动部署elasticjob的作业，支持自动部署spring bean模式的作业。当前只支持simple job，不支持dataflow 及shell job。
+根据数据库的定义，自动部署elasticjob的作业，支持自动部署spring bean模式的作业。支持simple、dataflow 及shell 三种job。
 
 主要适用以下场景
 
  - 依托jobParameter 实现不同任务的执行，并且需要经常进行变更，如报表类job
  - 需要分类管控job运行环境，如按应用类型不同的job部署到不同机器、连接不同数据源的job分开部署等
  - 优雅下线job进程
+ -  需要记录job变更历史 
  
 
 代码基于elasticjob-lite 2.1.4/2.1.5 进行修改和扩展。
@@ -41,7 +42,7 @@ JobSettings本项目新增加了如下job归属组及状态2个字段 :
     
  private String status=JobOperateAPIImpl.Enabled;
  
- 同时serialVersionUID不入数据库。
+ 属性：serialVersionUID和jobProperties不入数据库。
  
     
 ## 自动部署逻辑
@@ -107,13 +108,29 @@ ComponentScan.basePackages=com.radishgz.elasticjobautodeploy.example,elasticjob.
 elasticjob.operation.simplejob 为默认的package，必须保留。
 
 ## 部署
-  需要执行2点
- 1. 将相关jar放到./jars下或者使用-Dloader.path指定的目录下
- 2. 如果使用了spring bean，需要将相关packae加入到application.properties中的ComponentScan.basePackages中
+  方式1，将job jar作为第三方jar，此方式需要执行
+ 1. 以uber jar模式启动elasticjob-autodeploy
+ 2. 将相关jar放到./jars下或者使用-Dloader.path指定的目录下
+ 3. 如果使用了spring bean，需要将相关package加入到application.properties中的ComponentScan.basePackages中
  
+ 方法2. 将elasticjob-autodeploy作为maven dependency引入，和应用job一起打包为uber jar启动，具体请参考example project。
+
+## 如何记录历史及其它操作信息
+
+  如何记录历史是实际需要使用者自己处理的，原因是每个公司、项目可能有不同的记录需求，比如operator id的格式可能不同，有些用数字、有些用字符串。
+ 表jobs_settings 可以自行增加字段，不删除基础字段就不影响elasticjob-autodeploy，操作历史表也可以自行增加。
+ 这种模式需要关闭liquibase的自动更新。
+
+## 其它方法
+  在类LiteJobCreateFactory及LiteJobOperation提供了一些job创建及变更的方法，可以使用。
+ 注意  LiteJobCreateFactory里面创建job会记录到数据库，但LiteJobOperation的操作都仅仅限于ZK。
+
 ## License
-部分代码基于elasticjob 2.1.5修改。
-本项目使用APACHE LICENSE, VERSION 2.0。
+
+package com.dangdang.ddframe.job.lite下代码基于elasticjob 2.1.5修改，遵循elasticjob 2.1.5的license。
+
+
+其它代码使用APACHE LICENSE, VERSION 2.0。
 
 
  

@@ -1,4 +1,4 @@
-package elasticjob.operation.simplejob;
+package elasticjob.autodeploy.operation;
 
 import com.dangdang.ddframe.job.executor.ShardingContexts;
 import com.dangdang.ddframe.job.lite.api.listener.ElasticJobListener;

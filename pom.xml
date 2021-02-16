@@ -25,7 +25,7 @@
 		<maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
 		<lombok.version>1.16.4</lombok.version>
 		<mybatisplus.version>3.4.0</mybatisplus.version>
-	<nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
+		<nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
 	</properties>
 
 
@@ -71,6 +71,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<groupId>org.junit.vintage</groupId> -->
+<!-- 					<artifactId>junit-vintage-engine</artifactId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
 			<scope>test</scope>
 		</dependency>
 
@@ -163,12 +169,12 @@
 		<!-- <artifactId>comm.tools</artifactId> -->
 		<!-- <version>1.0.0</version> -->
 		<!-- </dependency> -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.junit.jupiter</groupId> -->
+<!-- 			<artifactId>junit-jupiter-engine</artifactId> -->
+<!-- 			<version>5.5.2</version> -->
+<!-- 			<scope>test</scope> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -437,16 +443,16 @@
 		<snapshotRepository>
 			<id>sonatype-nexus-snapshots</id>
 			<name>Sonatype Nexus Snapshots</name>
-			      <url>http://localhost:8081/nexus/content/repositories/snapshots</url>
-			
-<!-- 			<url>https://oss.sonatype.org/content/repositories/snapshots/</url> -->
+			<url>http://localhost:8081/nexus/content/repositories/snapshots</url>
+
+			<!-- <url>https://oss.sonatype.org/content/repositories/snapshots/</url> -->
 		</snapshotRepository>
 		<repository>
 			<id>sonatype-nexus-staging</id>
 			<name>Nexus Release Repository</name>
-						<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-			
-<!-- 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url> -->
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+
+			<!-- <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url> -->
 		</repository>
 	</distributionManagement>
 </project>

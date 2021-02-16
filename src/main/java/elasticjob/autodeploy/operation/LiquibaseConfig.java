@@ -1,4 +1,4 @@
-package elasticjob.operation.simplejob;
+package elasticjob.autodeploy.operation;
 
 import javax.sql.DataSource;
 
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 import liquibase.integration.spring.SpringLiquibase;
 
-//@ConditionalOnProperty(name = "autodeploy.elasticjob.liquibase.enabled", havingValue = "true",matchIfMissing = false)
+@ConditionalOnProperty(name = "spring.liquibase.enabled", havingValue = "true",matchIfMissing = false)
 @Configuration
 public class LiquibaseConfig {
 

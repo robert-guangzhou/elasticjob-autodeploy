@@ -158,10 +158,20 @@ public final class JobOperateAPIImpl implements JobOperateAPI {
     }
     
      
+    /**
+     * set status of jobs in zk
+     * @param jobName job name
+     * @param status  
+     */
     public void setJobStatus(final String jobName,String status) {
     	regCenter.persist("/"+jobName+"/status", status);
     }
     
+    /**
+     * get job's status in zk
+     * @param jobName
+     * @return
+     */
     public String getJobStatus(final String jobName) {
     	String result = regCenter.get("/"+jobName+"/status");
     	if (result==null ||result.isEmpty()) {

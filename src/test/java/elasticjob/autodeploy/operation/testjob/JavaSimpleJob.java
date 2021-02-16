@@ -1,4 +1,4 @@
-package elasticjob.operation.testjob;
+package elasticjob.autodeploy.operation.testjob;
 /*
  * Copyright 1999-2015 dangdang.com.
  * <p>
@@ -21,7 +21,7 @@ package elasticjob.operation.testjob;
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
 
-import elasticjob.operation.simplejob.SimpleCronJob;
+import elasticjob.autodeploy.operation.LiteJobOperation;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;

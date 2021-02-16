@@ -1,4 +1,4 @@
-package elasticjob.operation;
+package elasticjob.autodeploy.operation;
 
 import static org.junit.Assert.*;
 
@@ -11,9 +11,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import elasticjob.operation.simplejob.JobChangeListenerMain;
-import elasticjob.operation.simplejob.SimpleCronJob;
-import elasticjob.operation.testjob.JavaSimpleJob;
+import elasticjob.autodeploy.operation.JobChangeListenerMain;
+import elasticjob.autodeploy.operation.LiteJobCreateFactory;
+import elasticjob.autodeploy.operation.LiteJobOperation;
+import elasticjob.autodeploy.operation.testjob.JavaSimpleJob;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -22,7 +23,11 @@ import elasticjob.operation.testjob.JavaSimpleJob;
 public class JobChangeListenerTest {
 	
 	@Autowired
-	SimpleCronJob simpleCronJob;
+	private LiteJobOperation liteJobOperation;
+
+	@Autowired
+	private LiteJobCreateFactory liteJobCreateFactory;
+	 
 
 //	@Test
 //	public void testCreateJob() {
@@ -31,7 +36,7 @@ public class JobChangeListenerTest {
 //			String jobName="noParameterTestjobName";
 //			ZookeeperRegistryCenter nameReg = JobChangeListenerMain.initNameSpaceRegCenter();
 //			JobChangeListener listener = JobChangeListener.addJobChangeListener(SimpleCronJob.getRegCenter(),nameReg);
-//		 	SimpleCronJob.createJob( jobName,
+//		 	liteJobCreateFactory.createSimpleJob( jobName,
 //					"0/5 * * * * ?", JavaSimpleJob.class.getCanonicalName() , 1, "","description",null,10,true,"default");
 //		 	
 //		 	Thread.sleep(1000*20);
@@ -71,16 +76,16 @@ public class JobChangeListenerTest {
 		
 		try {
  			String jobName="remoteJob";
- 			simpleCronJob.createJob(jobName,
+ 			liteJobCreateFactory.createSimpleJob(jobName,
 					"0/5 * * * * ?", JavaSimpleJob.class.getCanonicalName() , 1, "",
-					"description",null,10,true,"default");
-			
- 			simpleCronJob.createJob(jobName+"testgroup",
+					"description");
+ 			liteJobCreateFactory.startJob(jobName);
+ 			liteJobCreateFactory.createSimpleJob(jobName+"testgroup",
 					"0/5 * * * * ?", JavaSimpleJob.class.getCanonicalName() , 1, "",
-					"description",null,10,true,"testgroup");
+					"description");
 		 	
-			Thread.sleep(1000*120);
-			simpleCronJob.removeJob(jobName);
+			Thread.sleep(1000*60);
+			liteJobOperation.removeJob(jobName);
 		} catch (IOException e) {
 			fail("ioexcption");
 			// TODO Auto-generated catch block

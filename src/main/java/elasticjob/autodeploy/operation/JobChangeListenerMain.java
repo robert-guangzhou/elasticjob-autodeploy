@@ -1,4 +1,4 @@
-package elasticjob.operation.simplejob;
+package elasticjob.autodeploy.operation;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;

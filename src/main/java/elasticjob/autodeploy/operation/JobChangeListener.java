@@ -1,4 +1,4 @@
-package elasticjob.operation.simplejob;
+package elasticjob.autodeploy.operation;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -34,6 +34,7 @@ import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperRegistryCenter;
 
  
  
+
 public class JobChangeListener implements TreeCacheListener {
 	
 	 
@@ -45,21 +46,23 @@ public class JobChangeListener implements TreeCacheListener {
 	private long maxWaitTime=20;
 
  	private String supportGroups ;
-	private SimpleCronJob simpleCronJob;
+	private LiteJobOperation simpleCronJob;
+	private LiteJobCreateFactory liteJobCreateFactory;
 	
-	public JobChangeListener(CoordinatorRegistryCenter regCenter, 
-			ZookeeperRegistryCenter namespaceRegCenter,SimpleCronJob simpleCronJo,String supportGroups) {
+	public JobChangeListener(LiteJobCreateFactory liteJobCreateFactory, CoordinatorRegistryCenter regCenter, 
+			ZookeeperRegistryCenter namespaceRegCenter,LiteJobOperation simpleCronJo,String supportGroups) {
 
 		super();
 		this.regCenter = regCenter;
 		this.namespaceRegCenter=namespaceRegCenter;
 		this.simpleCronJob=simpleCronJo;
 		this.supportGroups=supportGroups;
+		this.liteJobCreateFactory=liteJobCreateFactory;
 		random=new Random();
 	}
 
-	public static   JobChangeListener addJobChangeListener(CoordinatorRegistryCenter regCenter,
-			ZookeeperRegistryCenter namespaceRegCenter,SimpleCronJob simpleCronJob,String supportGroups) {
+	public static   JobChangeListener addJobChangeListener(LiteJobCreateFactory liteJobCreateFactory, CoordinatorRegistryCenter regCenter,
+			ZookeeperRegistryCenter namespaceRegCenter,LiteJobOperation simpleCronJob,String supportGroups) {
 
 		ZookeeperRegistryCenter zkreg = (ZookeeperRegistryCenter) regCenter;
 
@@ -75,7 +78,7 @@ public class JobChangeListener implements TreeCacheListener {
 		// zkreg.addCacheData(properties.getProperty("namespace"));
 		// new TreeCache(frame.ins, );
 
-		JobChangeListener listener = new JobChangeListener(regCenter,namespaceRegCenter,simpleCronJob,supportGroups);
+		JobChangeListener listener = new JobChangeListener(liteJobCreateFactory,regCenter,namespaceRegCenter,simpleCronJob,supportGroups);
 		cache.getListenable().addListener(listener);
 		return listener;
 	}
@@ -142,7 +145,7 @@ public class JobChangeListener implements TreeCacheListener {
 
 	}
 
-	
+
 	private void startJob(String jobName)   {
 		
 		
@@ -152,7 +155,7 @@ public class JobChangeListener implements TreeCacheListener {
             InterProcessMutex lock = new InterProcessMutex(client, "/start-job-lock/"+jobName);
             if (lock.acquire(maxWaitTime, TimeUnit.SECONDS)){
             	if (shouldStartJob(jobName)) {
-        			simpleCronJob.startSimpleJob(jobName);
+            		liteJobCreateFactory.startJob(jobName);
         			logger.info("jobName:" + jobName + " started");
 
         		}
