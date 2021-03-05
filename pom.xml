@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>io.github.robert-guangzhou</groupId>
 	<artifactId>elasticjob-autodeploy</artifactId>
-	<version>0.2</version>
+	<version>0.4</version>
 	<properties>
 		<java.version>1.8</java.version>
 		<elastic-job.version>2.1.4</elastic-job.version>
@@ -80,21 +80,23 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>com.baomidou</groupId>
-			<artifactId>mybatis-plus-boot-starter</artifactId>
-			<version>${mybatisplus.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.baomidou</groupId>
-			<artifactId>mybatis-plus</artifactId>
-			<version>${mybatisplus.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.baomidou</groupId>
-			<artifactId>mybatis-plus-generator</artifactId>
-			<version>${mybatisplus.version}</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.baomidou</groupId> -->
+<!-- 			<artifactId>mybatis-plus-boot-starter</artifactId> -->
+<!-- 			<version>${mybatisplus.version}</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.baomidou</groupId> -->
+<!-- 			<artifactId>mybatis-plus</artifactId> -->
+<!-- 			<version>${mybatisplus.version}</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.baomidou</groupId> -->
+<!-- 			<artifactId>mybatis-plus-generator</artifactId> -->
+<!-- 			<version>${mybatisplus.version}</version> -->
+<!-- 		</dependency> -->
+ 
+		
 		<!--Mysql jdbc驱动 -->
 		<dependency>
 			<groupId>mysql</groupId>

@@ -38,8 +38,9 @@ import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
 import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperConfiguration;
 import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperRegistryCenter;
 
-import elasticjob.autodeploy.operation.mapper.JobSettingsMapper;
+import elasticjob.autodeploy.operation.mapper.JobSettingDbOperation;
 
+ 
 
 @Component
 public class LiteJobCreateFactory {
@@ -79,16 +80,16 @@ public class LiteJobCreateFactory {
 
 	 
 	
-	@Value("${spring.datasource.driver-class-name}")
+	@Value("${elasticjob.datasource.driver-class-name}")
 	private String rdbDriver;
 
-	@Value("${spring.datasource.url}")
+	@Value("${elasticjob.datasource.url}")
 	private String rdbUrl;
 
-	@Value("${spring.datasource.username}")
+	@Value("${elasticjob.datasource.username}")
 	private String rdbUserName;
 
-	@Value("${spring.datasource.password}")
+	@Value("${elasticjob.datasource.password}")
 	private String rdbPassword;
 
 	@Value("${autodeploy.elasticjob.event.rdb:false}")
@@ -331,7 +332,8 @@ public class LiteJobCreateFactory {
 	
 
 	@Resource
-	JobSettingsMapper jobSettingsMapper;
+	JobSettingDbOperation jobSettingDbOperation;
+	
 	public JobScheduler createJob(String jobType,String jobGroup,String jobName, String cronString, String canonicalName,
 			int shardingNum, String shardingItemParameters, String description, String jobParameter, boolean misfire,
 			boolean failover, int reconcileIntervalMinutes, int maxTimeDiffSeconds,
@@ -372,8 +374,8 @@ public class LiteJobCreateFactory {
 	public JobScheduler createJob(JobSettings settings,boolean overwrite) throws IOException {
 		
 		if (overwrite)
-			jobSettingsMapper.deleteById(settings.getJobName());
-		jobSettingsMapper.insert(settings);
+			jobSettingDbOperation.deleteById(settings.getJobName());
+		jobSettingDbOperation.insert(settings);
 		
 		return createJobScheduler(settings,overwrite); 
 		

@@ -61,8 +61,8 @@ import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperConfiguration;
 import com.dangdang.ddframe.job.reg.zookeeper.ZookeeperRegistryCenter;
 import com.google.common.base.Optional;
 
-import elasticjob.autodeploy.operation.mapper.JobSettingsMapper;
-
+import elasticjob.autodeploy.operation.mapper.JobSettingDbOperation;
+ 
 import com.dangdang.ddframe.job.lite.lifecycle.api.JobSettingsAPI;
 import com.dangdang.ddframe.job.lite.lifecycle.domain.JobBriefInfo;
 import com.dangdang.ddframe.job.lite.lifecycle.domain.JobSettings;
@@ -290,23 +290,24 @@ public class LiteJobOperation {
 
 
 	@Resource
-	JobSettingsMapper jobSettingsMapper;
+	JobSettingDbOperation jobSettingDbOperation;
 
 	public void syncJobsFromZK() {
 
 		Collection<JobBriefInfo> jobs = getAllJobsBriefInfo();
+		ArrayList<JobSettings> settings=new ArrayList<JobSettings>();
 		for (JobBriefInfo job : jobs) {
 			String jobName = job.getJobName();
 			JobSettings entity = getJobSetting(jobName);
-			try {
+			 
 
 				String status = getJobStatus(jobName);
 				entity.setStatus(status);
-				jobSettingsMapper.insert(entity);
-			} catch (Exception e) {
-				logger.info(entity.getJobName() + " insert failure,it maybe exist in db");
-			}
+				settings.add(entity);
+		 
 		}
+		
+		jobSettingDbOperation.insertBatch(settings);
 	}
 
 	

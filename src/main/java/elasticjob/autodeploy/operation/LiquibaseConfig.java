@@ -13,8 +13,7 @@ import liquibase.integration.spring.SpringLiquibase;
 @Configuration
 public class LiquibaseConfig {
 
-//	@Value("${autodeploy.elasticjob.liquibase.enabled:ture}")
-//	private boolean enabled;
+ 
 
 	@Bean
 	public SpringLiquibase liquibase(DataSource dataSource) {

@@ -5,24 +5,27 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.curator.framework.imps.CuratorFrameworkImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.dangdang.ddframe.job.api.ShardingContext;
+ import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
+import com.dangdang.ddframe.job.event.rdb.JobEventRdbConfiguration;
 import com.dangdang.ddframe.job.lite.lifecycle.domain.JobBriefInfo;
 import com.dangdang.ddframe.job.lite.lifecycle.domain.JobSettings;
 import com.dangdang.ddframe.job.lite.lifecycle.internal.operate.JobOperateAPIImpl;
 
-import elasticjob.autodeploy.operation.mapper.JobSettingsMapper;
+import elasticjob.autodeploy.operation.mapper.JobSettingDbOperation;
 
 @Component
 public class SyncJobFromDatabaseJob implements SimpleJob {
@@ -32,10 +35,7 @@ public class SyncJobFromDatabaseJob implements SimpleJob {
 	}
 
 	private final static Logger logger = LoggerFactory.getLogger(SyncJobFromDatabaseJob.class);
-
-	@Resource
-	JobSettingsMapper jobSettingsMapper;
-
+ 
 	@Autowired
 	private LiteJobOperation liteJobOperation;
 
@@ -90,12 +90,14 @@ public class SyncJobFromDatabaseJob implements SimpleJob {
 
 	}
 
+	@Resource
+	JobSettingDbOperation jobSettingDbOperation;
+
 	public void compareJobsFromZK(String selfName) {
 
 		logger.info("synchronizing jobs from database by job:" + selfName);
-		QueryWrapper queryWrapper = new QueryWrapper<>();
-
-		List<JobSettings> list = jobSettingsMapper.selectList(queryWrapper);
+		 
+ 		List<JobSettings> list = jobSettingDbOperation.getAllJobSetting();
 
 		List<String> dbJobNameList = new ArrayList<String>();
 
